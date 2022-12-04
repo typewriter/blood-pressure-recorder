@@ -7,11 +7,12 @@ import {
   FormLabel,
   Heading,
   HStack,
-  NumberInput,
-  NumberInputField,
+  Input,
+  useToast,
 } from "@chakra-ui/react";
 import { CheckIcon } from "@chakra-ui/icons";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useEffect } from "react";
 
 type Inputs = {
   max: string;
@@ -20,7 +21,14 @@ type Inputs = {
 };
 
 function App() {
-  const { register, handleSubmit } = useForm<Inputs>();
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setFocus,
+    formState: { isSubmitting, isSubmitSuccessful },
+  } = useForm<Inputs>();
+  const toast = useToast();
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     const d = new Date();
@@ -42,6 +50,19 @@ function App() {
     });
   };
 
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      setFocus("max");
+      reset();
+      toast({
+        title: "記録しました",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [isSubmitSuccessful, reset]);
+
   return (
     <Box>
       <Heading>血圧を記録する</Heading>
@@ -50,46 +71,32 @@ function App() {
           <FormControl>
             <HStack>
               <FormLabel>最高</FormLabel>
-              <NumberInput
+              <Input
+                type="number"
                 size="lg"
-                max={200}
-                min={100}
-                keepWithinRange={false}
-                clampValueOnBlur={false}
-              >
-                <NumberInputField autoFocus={true} {...register("max")} />
-              </NumberInput>
+                autoFocus={true}
+                {...register("max")}
+              />
             </HStack>
           </FormControl>
           <FormControl>
             <HStack>
               <FormLabel>最低</FormLabel>
-              <NumberInput
-                size="lg"
-                max={150}
-                min={50}
-                keepWithinRange={false}
-                clampValueOnBlur={false}
-              >
-                <NumberInputField {...register("min")} />
-              </NumberInput>
+              <Input type="number" size="lg" {...register("min")} />
             </HStack>
           </FormControl>
           <FormControl>
             <HStack>
               <FormLabel>脈拍</FormLabel>
-              <NumberInput
-                size="lg"
-                max={100}
-                min={50}
-                keepWithinRange={false}
-                clampValueOnBlur={false}
-              >
-                <NumberInputField {...register("pulseRate")} />
-              </NumberInput>
+              <Input type="number" size="lg" {...register("pulseRate")} />
             </HStack>
           </FormControl>
-          <Button leftIcon={<CheckIcon />} type="submit">
+          <Button
+            isLoading={isSubmitting}
+            loadingText="記録中..."
+            leftIcon={<CheckIcon />}
+            type="submit"
+          >
             記録
           </Button>
         </form>

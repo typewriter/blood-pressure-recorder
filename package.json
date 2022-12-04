@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "check": "npx eslint src/ && npx prettier --check .",
@@ -21,6 +21,7 @@
     "react-hook-form": "^7.40.0"
   },
   "devDependencies": {
+    "@hookform/devtools": "^4.2.3",
     "@types/react": "^18.0.24",
     "@types/react-dom": "^18.0.8",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
